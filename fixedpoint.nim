@@ -10,6 +10,10 @@ proc toFloat*[T, W](f: FixedPoint[T, W]): float =
 converter conv*[T, W](f: FixedPoint[T, W]): float =
   toFloat(f)
 
+# The other one
+converter conv*[T, W](v: float): FixedPoint[T, W] =
+  FixedPoint[T, W](0)
+
 proc `$`*[T, W](f: FixedPoint[T, W]): string =
   $toFloat(f)
 
