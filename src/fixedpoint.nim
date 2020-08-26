@@ -12,13 +12,12 @@ proc getFloat*[T, W](f: FixedPoint[T, W]): float =
 
 
 proc getInt*[T, W](f: FixedPoint[T, W]): T =
-  if f.val != 0:
-    var round: FixedPoint[T, W]
-    if f.val > 0:
-      round.set(0.5)
-    else:
-      round.set(-0.5)
-    result = (f + round).val shr W
+  if f.val == 0:
+    result = 0
+  elif f.val > 0:
+    result = (f.val + (1 shl (W-1))) shr W
+  else:
+    result = (f.val + (1 shl (W-1)) - 1) shr W
 
 
 proc `$`*[T, W](f: FixedPoint[T, W]): string =
