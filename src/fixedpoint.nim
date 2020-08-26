@@ -7,12 +7,22 @@ type
     val*: T
 
 
-proc toFloat*[T, W](f: FixedPoint[T, W]): float =
+proc getFloat*[T, W](f: FixedPoint[T, W]): float =
   float(f.val) / pow(2.0, float(W))
 
 
+proc getInt*[T, W](f: FixedPoint[T, W]): T =
+  if f.val != 0:
+    var round: FixedPoint[T, W]
+    if f.val > 0:
+      round.set(0.5)
+    else:
+      round.set(-0.5)
+    result = (f + round).val shr W
+
+
 proc `$`*[T, W](f: FixedPoint[T, W]): string =
-  $toFloat(f)
+  $getFloat(f)
 
 
 proc dump*[T, W](f: FixedPoint[T, W]): string =

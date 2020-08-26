@@ -1,46 +1,76 @@
 import unittest
 import fixedpoint
 
-defFixedPoint(FP_8_0, uint8, 0)
-defFixedPoint(FP_8_2, uint8, 2)
-defFixedPoint(FP_8_4, uint8, 4)
-defFixedPoint(FP_8_8, uint8, 8)
+defFixedPoint(FP_U8_0, uint8, 0)
+defFixedPoint(FP_U8_2, uint8, 2)
+defFixedPoint(FP_U8_4, uint8, 4)
+defFixedPoint(FP_U8_8, uint8, 8)
 
-defFixedPoint(Speed, uint8, 3)
-defFixedPoint(Position, uint16, 4)
+defFixedPoint(FP_S8_2, int8, 2)
 
 
 
 suite "fixedpoint":
 
-  test "FP_8_0":
-    var a = toFP_8_0(255)
+  test "FP_U8_0":
+    var a = toFP_U8_0(255)
     check(a.val == 255)
-    check(a.toFloat == 255.0)
+    check(a.getFloat == 255.0)
   
-  test "FP_8_2":
-    var a = toFP_8_2(63.75)
+  test "FP_U8_2":
+    var a = toFP_U8_2(63.75)
     check(a.val == 255)
-    check(a.toFloat == 63.75)
+    check(a.getFloat == 63.75)
   
-  test "FP_8_8":
-    var a = toFP_8_8(0.99609375)
+  test "FP_U8_8":
+    var a = toFP_U8_8(0.99609375)
     check(a.val == 255)
-    check(a.toFloat == 0.99609375)
+    check(a.getFloat == 0.99609375)
+
+  test "+ signed":
+    block:
+      var a = toFP_S8_2(1.5)
+      var b = toFP_S8_2(3.5)
+      check a + b == toFP_S8_2(5.0)
+   
+    block:
+      var a = toFP_S8_2( 1.5)
+      var b = toFP_S8_2(-3.5)
+      check a + b == toFP_S8_2(-2.0)
+  
+  test "getint unsigned":
+    var a: FP_U8_2
+    a.set(1.25); check a.getInt == 1.uint8
+    a.set(1.25); check a.getInt == 1.uint8
+    a.set(1.50); check a.getInt == 2.uint8
+    a.set(1.75); check a.getInt == 2.uint8
+    a.set(2.00); check a.getInt == 2.uint8
+    a.set(2.25); check a.getInt == 2.uint8
+    a.set(2.50); check a.getInt == 3.uint8
+    a.set(2.75); check a.getInt == 3.uint8
+
+  test "getint signed":
+    var b: FP_S8_2
+    b.set( 1.00); check b.getInt ==  1.int8
+    b.set(-1.00); check b.getInt == -1.int8
+    b.set(-1.25); check b.getInt == -1.int8
+    b.set(-1.50); check b.getInt == -2.int8
+    b.set(-1.75); check b.getInt == -2.int8
+    b.set(-2.00); check b.getInt == -2.int8
 
   test "==":
-    check to_FP_8_2(10.25) == to_FP_8_2(10.25)
-    check to_FP_8_2(10.25) == to_FP_8_4(10.25)
-    check to_FP_8_4(10.25) == to_FP_8_2(10.25)
+    check to_FP_U8_2(10.25) == to_FP_U8_2(10.25)
+    check to_FP_U8_2(10.25) == to_FP_U8_4(10.25)
+    check to_FP_U8_4(10.25) == to_FP_U8_2(10.25)
   
   test "<":
-    check to_FP_8_2(10) < to_FP_8_2(10.25)
-    check to_FP_8_4(10) < to_FP_8_2(10.25)
-    check to_FP_8_2(10) < to_FP_8_4(10.25)
+    check to_FP_U8_2(10) < to_FP_U8_2(10.25)
+    check to_FP_U8_4(10) < to_FP_U8_2(10.25)
+    check to_FP_U8_2(10) < to_FP_U8_4(10.25)
 
-  test "FP_8_2 +":
-    check toFP_8_2(5.25) + toFP_8_2(4.75) == toFP_8_2(10.0)
-    check toFP_8_2(5.5) + 10 == toFP_8_2(15.5)
+  test "FP_U8_2 +":
+    check toFP_U8_2(5.25) + toFP_U8_2(4.75) == toFP_U8_2(10.0)
+    check toFP_U8_2(5.5) + 10 == toFP_U8_2(15.5)
 
 
 
