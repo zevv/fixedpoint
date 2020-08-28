@@ -55,6 +55,11 @@ proc `<`*[T1, T2, W1, W2](f1: FixedPoint[T1, W1], f2: FixedPoint[T2, W2]): bool 
     return f1.val < f2.val shr (W2-W1)
 
 
+proc `-`*[T, W](f: FixedPoint[T, W]): FixedPoint[T, W] =
+  ## Unary minus
+  result.val = -f.val
+
+
 proc `+`*[T1, T2, W1, W2](f1: FixedPoint[T1, W1], f2: FixedPoint[T2, W2]): FixedPoint[T1, W1] =
   assert sizeof(T1) >= sizeof(T2)
   when W1 == W2:
@@ -78,6 +83,16 @@ proc `+`*[T, W](f1: FixedPoint[T, W], i: SomeInteger): FixedPoint[T, W] =
 
 proc `+=`*[T, W](f1: var FixedPoint[T, W], i: int) =
   f1 = f1 + i
+
+
+proc `-`*[T1, T2, W1, W2](f1: FixedPoint[T1, W1], f2: FixedPoint[T2, W2]): FixedPoint[T1, W1] =
+  result = f1 + -f2
+
+proc `-=`*[T1, T2, W1, W2](f1: var FixedPoint[T1, W1], f2: FixedPoint[T2, W2]) =
+  f1 = f1 - f2
+
+proc `-=`*[T, W](f1: var FixedPoint[T, W], i: int) =
+  f1 = f1 - i
 
 
 proc `*`*[T, W](f1, f2: FixedPoint[T, W]): FixedPoint[T, W] =

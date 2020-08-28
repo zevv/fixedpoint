@@ -26,6 +26,11 @@ suite "fixedpoint":
     var a = toFP_U8_8(0.99609375)
     check(a.val == 255)
     check(a.getFloat == 0.99609375)
+  
+  test "- uni":
+    var a = toFP_S8_2(3.5)
+    var b = -a
+    check b == toFP_S8_2(-3.5)
 
   test "+ signed":
     block:
@@ -37,6 +42,12 @@ suite "fixedpoint":
       var a = toFP_S8_2( 1.5)
       var b = toFP_S8_2(-3.5)
       check a + b == toFP_S8_2(-2.0)
+  
+  test "- signed":
+    block:
+      var a = toFP_S8_2(3.5)
+      var b = toFP_S8_2(1.5)
+      check a - b == toFP_S8_2(2.0)
   
   test "getint unsigned":
     var a: FP_U8_2
