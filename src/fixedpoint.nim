@@ -40,18 +40,18 @@ proc set*[T, W](f: var FixedPoint[T, W], val: static[SomeFloat]) =
 proc `==`*[T1, T2, W1, W2](f1: FixedPoint[T1, W1], f2: FixedPoint[T2, W2]): bool =
   when W1 == W2:
     return f1.val == f2.val
-  when W1 > W2:
+  elif W1 > W2:
     return f1.val shr (W1-W2) == f2.val
-  when W2 > W1:
+  elif W2 > W1:
     return f1.val == f2.val shr (W2-W1)
 
 
 proc `<`*[T1, T2, W1, W2](f1: FixedPoint[T1, W1], f2: FixedPoint[T2, W2]): bool =
   when W1 == W2:
     return f1.val < f2.val
-  when W1 > W2:
+  elif W1 > W2:
     return f1.val shr (W1-W2) < f2.val
-  when W2 > W1:
+  elif W2 > W1:
     return f1.val < f2.val shr (W2-W1)
 
 
@@ -98,7 +98,7 @@ proc `-=`*[T, W](f1: var FixedPoint[T, W], i: int) =
 proc `*`*[T, W](f1, f2: FixedPoint[T, W]): FixedPoint[T, W] =
   if T is uint8:
     return FixedPoint[T, W]((uint16(f1) * uint16(f2)) shr W )
-  if T is uint16:
+  elif T is uint16:
     return FixedPoint[T, W]((uint32(f1) * uint32(f2)) shr W )
   else:
     echo "no can do"
