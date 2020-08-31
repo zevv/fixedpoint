@@ -48,14 +48,17 @@ proc shrIfPos[T: SomeInteger](v: T, n: static[int]): T =
   else:
     v
 
+template BT(val: SomeInteger): untyped =
+  ## Convert `val` to the widest of [T1, T2]
+  when sizeof(T1) >= sizeof(T2): val.T1 else: val.T2
+
+template WT(): untyped =
+  ## Return the wides type of [T1, T2[
+  when sizeof(T1) >= sizeof(T2): T1 else: T2
+
 template makeCmpOp(op: untyped) =
   proc op*[T1, T2, W1, W2, O1, O2](f1: FixedPoint[T1, W1, O1], f2: FixedPoint[T2, W2, O2]): bool =
-    template aux(T: typed) =
-      return op(f1.val.T.shrIfPos(W1-W2), f2.val.T.shrIfPos(W2-W1))
-    when sizeof(T1) >= sizeof(T2):
-      aux(T1)
-    else:
-      aux(T2)
+    return op(f1.val.BT.shrIfPos(W1-W2), f2.val.BT.shrIfPos(W2-W1))
 
 makeCmpOp `<`
 makeCmpOp `<=`
@@ -81,35 +84,22 @@ proc shift[T: SomeInteger](v: T, left, right: static[int]): T =
 
 
 proc `+`*[T1, T2, W1, W2, O](f1: FixedPoint[T1, W1, O], f2: FixedPoint[T2, W2, O]): auto =
-  template aux(T: typed) =
-    return FixedPoint[T, W1, O](val: f1.val.T + f2.val.T.shift(W1, W2))
-  when sizeof(T1) >= sizeof(T2):
-    aux(T1)
-  else:
-    aux(T2)
-
+  return FixedPoint[WT, W1, O](val: f1.val.BT + f2.val.BT.shift(W1, W2))
 
 proc `+=`*[T1, T2, W1, W2, O](f1: var FixedPoint[T1, W1, O], f2: FixedPoint[T2, W2, O]) =
   f1 = f1 + f2
-
 
 proc `+`*[T, W, O](f1: FixedPoint[T, W, O], i: SomeInteger): FixedPoint[T, W, O] =
   var f2: FixedPoint[T, W, O]
   f2.set(i)
   return f1 + f2
 
-
 proc `+=`*[T, W, O](f1: var FixedPoint[T, W, O], i: int) =
   f1 = f1 + i
 
 
 proc `-`*[T1, T2, W1, W2, O](f1: FixedPoint[T1, W1, O], f2: FixedPoint[T2, W2, O]): auto =
-  template aux(T: typed) =
-    return FixedPoint[T, W1, O](val: f1.val.T - f2.val.T.shift(W1, W2))
-  when sizeoF(T1) >= sizeof(T2):
-    aux(T1)
-  else:
-    aux(T2)
+  return FixedPoint[WT, W1, O](val: f1.val.BT - f2.val.BT.shift(W1, W2))
 
 proc `-=`*[T1, T2, W1, W2, O](f1: var FixedPoint[T1, W1, O], f2: FixedPoint[T2, W2, O]) =
   f1 = f1 - f2
@@ -119,7 +109,7 @@ proc `-=`*[T, W, O](f1: var FixedPoint[T, W, O], i: int) =
 
 
 proc `*`*[T, W, O](f1, f2: FixedPoint[T, W, O]): FixedPoint[T, W, O] =
-  if T is uint8:
+  when T is uint8:
     return FixedPoint[T, W, O]((uint16(f1) * uint16(f2)) shr W )
   elif T is uint16:
     return FixedPoint[T, W, O]((uint32(f1) * uint32(f2)) shr W )
