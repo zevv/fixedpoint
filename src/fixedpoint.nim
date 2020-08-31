@@ -42,23 +42,21 @@ proc set*[T, W, O](f: var FixedPoint[T, W, O], val: static[SomeFloat]) =
 
 
 proc `==`*[T1, T2, W1, W2, O1, O2](f1: FixedPoint[T1, W1, O1], f2: FixedPoint[T2, W2, O2]): bool =
-
+  
   ## Compare two fixed point numbers
+ 
+  template aux(T: typed) =
+    when W1 == W2:
+      return f1.val.T == f2.val.T
+    elif W1 > W2:
+      return f1.val.T shr (W1-W2) == f2.val.T
+    elif W2 > W1:
+      return f1.val.T == f2.val.T shr (W2-W1)
 
   when sizeof(T1) >= sizeof(T2):
-    when W1 == W2:
-      return f1.val.T1 == f2.val.T1
-    elif W1 > W2:
-      return f1.val.T1 shr (W1-W2) == f2.val.T1
-    elif W2 > W1:
-      return f1.val.T1 == f2.val.T1 shr (W2-W1)
+    aux(T1)
   else:
-    when W1 == W2:
-      return f1.val.T2 == f2.val.T2
-    elif W1 > W2:
-      return f1.val.T2 shr (W1-W2) == f2.val.T2
-    elif W2 > W1:
-      return f1.val.T2 == f2.val.T2 shr (W2-W1)
+    aux(T2)
 
 
 proc `<`*[T1, T2, W1, W2, O1, O2](f1: FixedPoint[T1, W1, O1], f2: FixedPoint[T2, W2, O2]): bool =
