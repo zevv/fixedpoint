@@ -1,12 +1,13 @@
 import unittest
 import fixedpoint
 
-defFixedPoint(FP_U8_0, uint8, 0)
-defFixedPoint(FP_U8_2, uint8, 2)
-defFixedPoint(FP_U8_4, uint8, 4)
-defFixedPoint(FP_U8_8, uint8, 8)
+defFixedPoint(FP_U8_0, uint8, 0, Ignore)
+defFixedPoint(FP_U8_2, uint8, 2, Ignore)
+defFixedPoint(FP_U8_4, uint8, 4, Ignore)
+defFixedPoint(FP_U8_8, uint8, 8, Ignore)
 
-defFixedPoint(FP_S8_2, int8, 2)
+defFixedPoint(FP_S8_2, int8, 2, Ignore)
+defFixedPoint(FP_S16_4, int16, 4, Ignore)
 
 
 
@@ -42,6 +43,12 @@ suite "fixedpoint":
       var a = toFP_S8_2( 1.5)
       var b = toFP_S8_2(-3.5)
       check a + b == toFP_S8_2(-2.0)
+    
+    block:
+      var a = toFP_S8_2(1.5)
+      var b = toFP_S16_4(3.5)
+      check a + b == toFP_S16_4(5.0)
+      check b + a == toFP_S16_4(5.0)
 
   test "- signed":
     block:
@@ -73,6 +80,7 @@ suite "fixedpoint":
     check to_FP_U8_2(10.25) == to_FP_U8_2(10.25)
     check to_FP_U8_2(10.25) == to_FP_U8_4(10.25)
     check to_FP_U8_4(10.25) == to_FP_U8_2(10.25)
+    check to_FP_S16_4(10.25) == to_FP_U8_2(10.25)
 
   test "<":
     check to_FP_U8_2(10) < to_FP_U8_2(10.25)
