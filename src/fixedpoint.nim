@@ -105,12 +105,16 @@ proc `*`*[T, W](f1, f2: FixedPoint[T, W]): FixedPoint[T, W] =
 
 
 
-
 template defFixedPoint*(id: untyped, T: typed, W: static[int]) =
 
   type id* = FixedPoint[T, W]
 
-  proc `to id`*(val: static[SomeNumber]): id =
+  proc `to id`*(val: static[SomeFloat]): id =
     result.set(val)
 
+  proc `to id`*(val: SomeInteger): id =
+    result.set(val)
 
+  const
+    `sub id steps`* {.inject.} = T(1) shl W
+    `lowest id Step`* {.inject.} = id(val: 1)
