@@ -41,6 +41,8 @@ proc set*[T,W,O](f: var FP[T,W,O], val: static[SomeFloat]) =
   f.val = T(val * float64(1 shl W) + round)
 
 
+# Some helper stuff
+
 proc shrIfPos[T: SomeInteger](v: T, n: static[int]): T =
   ## Shift right if n > 0, otherwise keep as is
   if n > 0:
@@ -48,6 +50,14 @@ proc shrIfPos[T: SomeInteger](v: T, n: static[int]): T =
   else:
     v
 
+proc shift[T: SomeInteger](v: T, left, right: static[int]): T =
+  ## Shift left and/or right
+  when left > right:
+    v shl (left - right)
+  elif left < right:
+    v shr (right - left)
+  else:
+    v
 
 
 # These templates expect `T1` and `T2` to be in scope, and return the largest
@@ -67,8 +77,7 @@ template toWT(val: SomeInteger): untyped =
 
 
 
-
-# Compare operators
+# Comparison operators
 
 template makeCmpOp(op: untyped) =
   proc op*[T1,W1,O1, T2,W2,O2](f1: FP[T1,W1,O1], f2: FP[T2,W2,O2]): bool =
@@ -82,19 +91,12 @@ makeCmpOp `>=`
 makeCmpOp `>`
 
 
+# Math stuff
+
+
 proc `-`*[T,W,O](f: FP[T,W,O]): FP[T,W,O] =
   ## Unary minus
   result.val = -f.val
-
-
-proc shift[T: SomeInteger](v: T, left, right: static[int]): T =
-  ## Shift left and/or right
-  when left > right:
-    v shl (left - right)
-  elif left < right:
-    v shr (right - left)
-  else:
-    v
 
 
 
@@ -132,6 +134,7 @@ proc `*`*[T,W,O](f1, f2: FP[T,W,O]): FP[T,W,O] =
     echo "no can do"
 
 
+# Type information
 
 proc low*[T,W,O](x: typedesc[FP[T,W,O]]): auto =
   ## Returns the lowest possible value for this type
@@ -145,6 +148,8 @@ proc step*[T,W,O](x: typedesc[FP[T,W,O]]): auto =
   ## Returns the smallest step size for this type
   FP[T,W,O](val: 1)
 
+
+# Type 'constructor'
 
 template defFixedPoint*(id: untyped, T: typed, W: static[int], O: static[OverflowHandling]) =
 
