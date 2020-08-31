@@ -41,17 +41,28 @@ proc set*[T, W, O](f: var FixedPoint[T, W, O], val: static[SomeFloat]) =
   f.val = T(val * float64(1 shl W) + round)
 
 
+proc shift[T: SomeInteger](v: T, left, right: static[int]): T =
+  ## Shift left and/or right
+  when left > right:
+    v shl (left - right)
+  elif left < right:
+    v shr (right - left)
+  else:
+    v
+
+proc shrIfPos[T: SomeInteger](v: T, n: static[int]): T =
+  ## Shift right if n > 0, otherwise keep as is
+  if n > 0:
+    v shr n
+  else:
+    v
+
 proc `==`*[T1, T2, W1, W2, O1, O2](f1: FixedPoint[T1, W1, O1], f2: FixedPoint[T2, W2, O2]): bool =
   
   ## Compare two fixed point numbers
  
   template aux(T: typed) =
-    when W1 == W2:
-      return f1.val.T == f2.val.T
-    elif W1 > W2:
-      return f1.val.T shr (W1-W2) == f2.val.T
-    elif W2 > W1:
-      return f1.val.T == f2.val.T shr (W2-W1)
+    return f1.val.T.shrIfPos(W1-W2) == f2.val.T.shrIfPos(W2-W1)
 
   when sizeof(T1) >= sizeof(T2):
     aux(T1)
@@ -72,15 +83,6 @@ proc `-`*[T, W, O](f: FixedPoint[T, W, O]): FixedPoint[T, W, O] =
   ## Unary minus
   result.val = -f.val
 
-
-proc shift[T: SomeInteger](v: T, left, right: static[int]): T =
-  ## Shift left and/or right
-  when left > right:
-    v shl (left - right)
-  elif left < right:
-    v shr (right - left)
-  else:
-    v
 
 
 proc `+`*[T1, T2, W1, W2, O](f1: FixedPoint[T1, W1, O], f2: FixedPoint[T2, W2, O]): auto =
