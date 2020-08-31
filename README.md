@@ -7,7 +7,7 @@ Fixed point math lib, very much work in progress.  Might or might not work.
 
 Define your custom fixed point types with the `defFixedPoint()` template:
 
-```
+``` Nim
 defFixedPoint(<name>, <basetype>, <fracBits>)
 ```
 
@@ -21,7 +21,7 @@ time with the generated template `to` concatenated with the name of your type.
 
 ## Example
 
-```
+``` Nim
 defFixedPoint(Speed, int8, 2)
 defFixedPoint(Position, int16, 4)
 
