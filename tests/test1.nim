@@ -7,6 +7,7 @@ defFixedPoint(FP_U8_4, uint8, 4, Ignore)
 defFixedPoint(FP_U8_8, uint8, 8, Ignore)
 
 defFixedPoint(FP_S8_2, int8, 2, Ignore)
+defFixedPoint(FP_S8_4, int8, 4, Ignore)
 defFixedPoint(FP_S16_4, int16, 4, Ignore)
 
 
@@ -96,7 +97,8 @@ suite "fixedpoint":
     check to_FP_S16_4(100.5) > to_FP_U8_4(10.25)
   
   test "*":
-    check to_FP_U8_2(1.5) * to_FP_U8_2(4.0) = to_FP_U8_2(8.0)
+    check to_FP_S8_4(1.5) * to_FP_S8_4(4.0) == toFP_S16_4(6.0)
+    check to_FP_S8_4(7.5) * to_FP_S8_4(4.0) == toFP_S16_4(30.0)
 
   test "FP_U8_2 +":
     check toFP_U8_2(5.25) + toFP_U8_2(4.75) == toFP_U8_2(10.0)

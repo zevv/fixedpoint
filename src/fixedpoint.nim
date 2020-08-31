@@ -37,6 +37,10 @@ proc set*[T,W,O](f: var FP[T,W,O], val: SomeInteger) =
 
 
 proc set*[T,W,O](f: var FP[T,W,O], val: static[SomeFloat]) =
+  when val < low(FP[T,W,O]).getFloat() or
+       val > high(FP[T,W,O]).getFloat():
+    {.error: "Overflow, " & $val & " does not fit in a " & $typeof(f).}
+
   let round = sgn(val).float * 0.5
   f.val = T(val * float64(1 shl W) + round)
 
@@ -45,7 +49,7 @@ proc set*[T,W,O](f: var FP[T,W,O], val: static[SomeFloat]) =
 
 proc shrIfPos[T: SomeInteger](v: T, n: static[int]): T =
   ## Shift right if n > 0, otherwise keep as is
-  if n > 0:
+  when n > 0:
     v shr n
   else:
     v
@@ -125,15 +129,18 @@ proc `-=`*[T,W,O](f1: var FP[T,W,O], i: int) =
   f1 = f1 - i
 
 
-proc `*`*[T,W,O](f1, f2: FP[T,W,O]): FP[T,W,O] =
-  when T is uint8:
-    return FP[T,W,O]((uint16(f1) * uint16(f2)) shr W )
-  elif T is uint16:
-    return FP[T,W,O]((uint32(f1) * uint32(f2)) shr W )
-  elif T is uint32:
-    return FP[T,W,O]((uint64(f1) * uint64(f2)) shr W )
-  else:
-    echo "no can do"
+# TODO such overflow!
+
+proc `*`*[T,W,O](f1, f2: FP[T,W,O]): auto =
+
+  template aux(T2: untyped): untyped =
+    let val = (f1.val.T2 * f2.val.T2) shr W
+    return FP[T2,W,O](val: val)
+
+  when T is int8: aux(int16)
+  elif T is uint8: aux(uint16)
+  elif T is int16: aux(int32)
+  elif T is uint16: aux(uint32)
 
 
 # Type information
@@ -160,7 +167,7 @@ template defFixedPoint*(id: untyped, T: typed, W: static[int], O: static[Overflo
   proc `to id`*(val: static[SomeFloat]): id =
     result.set(val)
 
-  proc `to id`*(val: SomeInteger): id =
+  proc `to id`*(val: SomeInteger | FP[T,W,O]): id =
     result.set(val)
 
   const
