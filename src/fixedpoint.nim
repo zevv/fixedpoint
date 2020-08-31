@@ -48,7 +48,10 @@ proc shrIfPos[T: SomeInteger](v: T, n: static[int]): T =
   else:
     v
 
-template BT(val: SomeInteger): untyped =
+
+## TODO: Why can't I give toWT and WT the same name, they have different signatures?
+
+template toWT(val: SomeInteger): untyped =
   ## Convert `val` to the widest of [T1, T2]
   when sizeof(T1) >= sizeof(T2): T1(val) else: T2(val)
 
@@ -58,11 +61,12 @@ template WT(): untyped =
 
 template makeCmpOp(op: untyped) =
   proc op*[T1, T2, W1, W2, O1, O2](f1: FixedPoint[T1, W1, O1], f2: FixedPoint[T2, W2, O2]): bool =
-    return op(f1.val.BT.shrIfPos(W1-W2), f2.val.BT.shrIfPos(W2-W1))
+    return op(f1.val.toWT.shrIfPos(W1-W2), f2.val.toWT.shrIfPos(W2-W1))
 
 makeCmpOp `<`
 makeCmpOp `<=`
 makeCmpOp `==`
+makeCmpOp `!=`
 makeCmpOp `>=`
 makeCmpOp `>`
 
@@ -84,7 +88,7 @@ proc shift[T: SomeInteger](v: T, left, right: static[int]): T =
 
 
 proc `+`*[T1, T2, W1, W2, O](f1: FixedPoint[T1, W1, O], f2: FixedPoint[T2, W2, O]): auto =
-  return FixedPoint[WT, W1, O](val: f1.val.BT + f2.val.BT.shift(W1, W2))
+  return FixedPoint[WT, W1, O](val: f1.val.toWT + f2.val.toWT.shift(W1, W2))
 
 proc `+=`*[T1, T2, W1, W2, O](f1: var FixedPoint[T1, W1, O], f2: FixedPoint[T2, W2, O]) =
   f1 = f1 + f2
@@ -99,7 +103,7 @@ proc `+=`*[T, W, O](f1: var FixedPoint[T, W, O], i: int) =
 
 
 proc `-`*[T1, T2, W1, W2, O](f1: FixedPoint[T1, W1, O], f2: FixedPoint[T2, W2, O]): auto =
-  return FixedPoint[WT, W1, O](val: f1.val.BT - f2.val.BT.shift(W1, W2))
+  return FixedPoint[WT, W1, O](val: f1.val.toWT - f2.val.toWT.shift(W1, W2))
 
 proc `-=`*[T1, T2, W1, W2, O](f1: var FixedPoint[T1, W1, O], f2: FixedPoint[T2, W2, O]) =
   f1 = f1 - f2
