@@ -99,6 +99,14 @@ suite "fixedpoint":
     check toFP_U8_2(5.25) + toFP_U8_2(4.75) == toFP_U8_2(10.0)
     check toFP_U8_2(5.5) + 10 == toFP_U8_2(15.5)
 
+  test "low, high":
+    check low(FP_S8_2)  == toFP_S8_2(-32.00)
+    check high(FP_S8_2) == toFP_S8_2( 31.75)
+    check step(FP_S8_2) == toFP_S8_2(  0.25)
+    check low(FP_S16_4)  == toFP_S16_4(-2048.0000)
+    check high(FP_S16_4) == toFP_S16_4( 2047.9375)
+    check step(FP_S16_4) == toFP_S16_4(    0.0625)
+
   test "iterate steps":
     var
       FP8_2 = toFP_U8_2(1.0)

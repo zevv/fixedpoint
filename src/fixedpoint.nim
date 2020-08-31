@@ -50,10 +50,10 @@ proc shrIfPos[T: SomeInteger](v: T, n: static[int]): T =
 
 template BT(val: SomeInteger): untyped =
   ## Convert `val` to the widest of [T1, T2]
-  when sizeof(T1) >= sizeof(T2): val.T1 else: val.T2
+  when sizeof(T1) >= sizeof(T2): T1(val) else: T2(val)
 
 template WT(): untyped =
-  ## Return the wides type of [T1, T2[
+  ## Return the wides type of [T1, T2]
   when sizeof(T1) >= sizeof(T2): T1 else: T2
 
 template makeCmpOp(op: untyped) =
@@ -116,6 +116,19 @@ proc `*`*[T, W, O](f1, f2: FixedPoint[T, W, O]): FixedPoint[T, W, O] =
   else:
     echo "no can do"
 
+
+
+proc low*[T, W, O](x: typedesc[FixedPoint[T, W, O]]): auto =
+  ## Returns the lowest possible value for this type
+  FixedPoint[T, W, O](val: T.low)
+
+proc high*[T, W, O](x: typedesc[FixedPoint[T, W, O]]): auto =
+  ## Returns the highest possible value for this type
+  FixedPoint[T, W, O](val: T.high)
+
+proc step*[T, W, O](x: typedesc[FixedPoint[T, W, O]]): auto =
+  ## Returns the smallest step size for this type
+  FixedPoint[T, W, O](val: 1)
 
 
 template defFixedPoint*(id: untyped, T: typed, W: static[int], O: static[OverflowHandling]) =
