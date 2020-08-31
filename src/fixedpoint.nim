@@ -100,8 +100,10 @@ makeCmpOp `>`
 
 proc `-`*[T,W,O](f: FP[T,W,O]): FP[T,W,O] =
   ## Unary minus
-  result.val = -f.val
-
+  when T is SomeSignedInt:
+    result.val = -f.val
+  else:
+    {.error: "Can not do unary minus on unsigned int".}
 
 
 proc `+`*[T1,W1, T2,W2, O](f1: FP[T1, W1, O], f2: FP[T2, W2, O]): auto =
