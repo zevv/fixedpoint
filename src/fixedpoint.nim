@@ -130,6 +130,8 @@ proc `*`*[T,W,O](f1, f2: FP[T,W,O]): FP[T,W,O] =
     return FP[T,W,O]((uint16(f1) * uint16(f2)) shr W )
   elif T is uint16:
     return FP[T,W,O]((uint32(f1) * uint32(f2)) shr W )
+  elif T is uint32:
+    return FP[T,W,O]((uint64(f1) * uint64(f2)) shr W )
   else:
     echo "no can do"
 

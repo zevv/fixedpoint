@@ -94,6 +94,9 @@ suite "fixedpoint":
     check to_FP_U8_4(10.5) > to_FP_U8_2(10.25)
     check to_FP_U8_2(10.5) > to_FP_U8_4(10.25)
     check to_FP_S16_4(100.5) > to_FP_U8_4(10.25)
+  
+  test "*":
+    check to_FP_U8_2(1.5) * to_FP_U8_2(4.0) = to_FP_U8_2(8.0)
 
   test "FP_U8_2 +":
     check toFP_U8_2(5.25) + toFP_U8_2(4.75) == toFP_U8_2(10.0)
